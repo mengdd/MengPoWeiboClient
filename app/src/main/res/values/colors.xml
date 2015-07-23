@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Navigation Drawer-->
+    <color name="navigation_drawer_text_name">#FFFFFF</color>
+    <color name="navigation_drawer_text_email">#FFFFFF</color>
+    <color name="navigation_drawer_text_list_item">#DEFFFFFF</color>
+    <color name="navigation_drawer_text_sub_header">#8AFFFFFF</color>
+</resources>
