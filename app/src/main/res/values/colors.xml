@@ -18,4 +18,5 @@
     <color name="navigation_drawer_text_sub_header">#8AFFFFFF</color>
 
     <!--Toolbar-->
+    <color name="toolbar_text_color">@color/icons</color>
 </resources>
