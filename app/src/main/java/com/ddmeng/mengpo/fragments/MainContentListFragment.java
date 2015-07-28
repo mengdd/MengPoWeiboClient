@@ -4,11 +4,18 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ddmeng.mengpo.R;
+import com.ddmeng.mengpo.adapters.MainListAdapter;
+import com.ddmeng.mengpo.data.MockDataUtils;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +27,13 @@ import com.ddmeng.mengpo.R;
  */
 public class MainContentListFragment extends Fragment {
     public static final String TAG = MainContentListFragment.class.getSimpleName();
+
+    @InjectView(R.id.main_list)
+    RecyclerView mRecyclerView;
+
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -66,7 +80,10 @@ public class MainContentListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_content_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_main_content_list, container, false);
+        ButterKnife.inject(this, view);
+        initList();
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -88,6 +105,12 @@ public class MainContentListFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        ButterKnife.reset(this);
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -106,6 +129,16 @@ public class MainContentListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void initList() {
+
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new MainListAdapter(getActivity(), MockDataUtils.getMockStrings(20));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 }
