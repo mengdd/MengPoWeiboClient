@@ -4,6 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!--Drawer Menu-->
     <array name="drawer_menu_list">
         <item>Menu Item 1</item>
         <item>Menu Item 2</item>
@@ -11,4 +12,11 @@
     </array>
     <string name="drawer_menu_open">Drawer Open</string>
     <string name="drawer_menu_closed">Drawer Closed</string>
+
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

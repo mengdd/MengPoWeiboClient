@@ -1,6 +1,8 @@
 package com.ddmeng.mengpo;
 
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,11 +17,13 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.ddmeng.mengpo.fragments.MainContentListFragment;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainContentListFragment.OnFragmentInteractionListener {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -39,10 +43,11 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         initToolbar();
         initDrawerMenu();
+        showMainListFragment();
 
     }
 
-    private void initToolbar(){
+    private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -121,4 +126,15 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private void showMainListFragment() {
+        MainContentListFragment mainContentListFragment = MainContentListFragment.newInstance("aaa", "bbb");
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.content_container, mainContentListFragment, MainContentListFragment.TAG);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

@@ -9,4 +9,7 @@
     <dimen name="navigation_drawer_text_margin_left">72dp</dimen>
     <dimen name="navigation_drawer_list_item_height">48dp</dimen>
     <dimen name="navigation_drawer_group_margin_vertical">8dp</dimen>
+
+    <!--Login & Account-->
+    <dimen name="navigation_drawer_login_part_min_height">40dp</dimen>
 </resources>
