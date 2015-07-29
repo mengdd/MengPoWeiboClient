@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class MainActivity extends AppCompatActivity implements MainContentListFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MainContentListFragment.ContentListCallback {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void refresh() {
 
     }
 }

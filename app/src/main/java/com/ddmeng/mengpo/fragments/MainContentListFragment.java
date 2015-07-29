@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ import butterknife.InjectView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainContentListFragment.OnFragmentInteractionListener} interface
+ * {@link ContentListCallback} interface
  * to handle interaction events.
  * Use the {@link MainContentListFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -30,6 +31,8 @@ public class MainContentListFragment extends Fragment {
 
     @InjectView(R.id.main_list)
     RecyclerView mRecyclerView;
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -43,7 +46,7 @@ public class MainContentListFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private ContentListCallback mContentListCallback;
 
     /**
      * Use this factory method to create a new instance of
@@ -83,21 +86,16 @@ public class MainContentListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_content_list, container, false);
         ButterKnife.inject(this, view);
         initList();
+        initSwipeRefreshLayout();
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mContentListCallback = (ContentListCallback) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -113,7 +111,7 @@ public class MainContentListFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mContentListCallback = null;
     }
 
     /**
@@ -126,9 +124,9 @@ public class MainContentListFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface ContentListCallback {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        void refresh();
     }
 
     private void initList() {
@@ -141,4 +139,20 @@ public class MainContentListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    private void initSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mContentListCallback.refresh();
+                mSwipeRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 1000 * 5);//mock the time to stop refresh
+
+            }
+        });
+    }
 }
