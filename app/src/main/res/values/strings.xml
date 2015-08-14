@@ -13,7 +13,10 @@
     <string name="drawer_menu_open">Drawer Open</string>
     <string name="drawer_menu_closed">Drawer Closed</string>
 
+    <!--Account & Auth-->
     <string name="login">Login</string>
     <string name="logout">Logout</string>
-
+    <string name="account_auth_success">授权成功</string>
+    <string name="account_auth_failed">授权失败</string>
+    <string name="account_auth_canceled">取消授权</string>
 </resources>
