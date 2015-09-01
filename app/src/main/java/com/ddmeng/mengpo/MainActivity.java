@@ -1,6 +1,8 @@
 package com.ddmeng.mengpo;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -18,10 +20,12 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.ddmeng.mengpo.auth.AuthPresenter;
 import com.ddmeng.mengpo.fragments.MainContentListFragment;
 import com.ddmeng.mengpo.utils.Constants;
 import com.ddmeng.mengpo.utils.LogUtils;
 import com.ddmeng.mengpo.utils.PrefUtils;
+import com.ddmeng.mengpo.view.mvp.AuthView;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -33,7 +37,8 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class MainActivity extends AppCompatActivity implements MainContentListFragment.ContentListCallback {
+public class MainActivity extends AppCompatActivity
+        implements MainContentListFragment.ContentListCallback, AuthView {
     private static final String LOG_TAG = "MainActivity";
 
     @InjectView(R.id.drawer_layout)
@@ -46,9 +51,8 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
     Toolbar mToolbar;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private SsoHandler mSsoHandler;
-    private Oauth2AccessToken mAccessToken;
-    private WeiboAuthListener mAuthListener;
+
+    private AuthPresenter mAuthPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
         initToolbar();
         initDrawerMenu();
         showMainListFragment();
+
+        mAuthPresenter = new AuthPresenter(this);
 
     }
 
@@ -154,71 +160,48 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
 
     @OnClick(R.id.login_button)
     void doLogin(View view) {
-        // 创建微博实例
-        //mWeiboAuth = new WeiboAuth(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
-        // 快速授权时，请不要传入 SCOPE，否则可能会授权不成功
-        if (null == mSsoHandler) {
-            AuthInfo authInfo = new AuthInfo(this, Constants.APP_KEY, Constants.REDIRECT_URL, Constants.SCOPE);
-            mSsoHandler = new SsoHandler(MainActivity.this, authInfo);
-            initAuthListener();
-        }
-
-        LogUtils.i(LOG_TAG, "--authorize--");
-        mSsoHandler.authorize(mAuthListener);
-
+        mAuthPresenter.authorize();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (null != mSsoHandler) {
-            LogUtils.i(LOG_TAG, "authorizeCallBack, data: " + data);
-            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
-        }
+        mAuthPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void initAuthListener() {
-        mAuthListener = new WeiboAuthListener() {
-            @Override
-            public void onComplete(Bundle bundle) {
-                LogUtils.i(LOG_TAG, "onComplete");
-                // 从 Bundle 中解析 Token
-                mAccessToken = Oauth2AccessToken.parseAccessToken(bundle);
-                //从这里获取用户输入的 电话号码信息
-                String phoneNum = mAccessToken.getPhoneNum();
-                if (mAccessToken.isSessionValid()) {
+    @Override
+    public Activity getActivity() {
+        return this;
+    }
 
-                    // 保存 Token 到 SharedPreferences
-                    PrefUtils.saveAccessToken(MainActivity.this, mAccessToken);
-                    Toast.makeText(MainActivity.this,
-                            R.string.account_auth_success, Toast.LENGTH_SHORT).show();
-                } else {
-                    // 以下几种情况，您会收到 Code：
-                    // 1. 当您未在平台上注册的应用程序的包名与签名时；
-                    // 2. 当您注册的应用程序包名与签名不正确时；
-                    // 3. 当您在平台上注册的包名和签名与您当前测试的应用的包名和签名不匹配时。
-                    String code = bundle.getString("code");
-                    String message = getString(R.string.account_auth_failed);
-                    if (!TextUtils.isEmpty(code)) {
-                        message = message + "\nObtained the code: " + code;
-                    }
-                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-                }
-            }
+    @Override
+    public void onAuthSuccess() {
+        Toast.makeText(MainActivity.this,
+                R.string.account_auth_success, Toast.LENGTH_SHORT).show();
+    }
 
-            @Override
-            public void onWeiboException(WeiboException e) {
-                LogUtils.i(LOG_TAG, "onWeiboException: " + e);
-                Toast.makeText(MainActivity.this,
-                        "Auth exception : " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
+    @Override
+    public void onAuthFailed(Bundle bundle) {
+        String code = bundle.getString("code");
+        String message = getString(R.string.account_auth_failed);
+        if (!TextUtils.isEmpty(code)) {
+            message = message + "\nObtained the code: " + code;
+        }
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    }
 
-            @Override
-            public void onCancel() {
-                LogUtils.i(LOG_TAG, "onCancel");
-                Toast.makeText(MainActivity.this,
-                        R.string.account_auth_canceled, Toast.LENGTH_LONG).show();
-            }
-        };
+    @Override
+    public void onAuthException(Exception e) {
+        LogUtils.i(LOG_TAG, "onWeiboException: " + e);
+        Toast.makeText(MainActivity.this,
+                "Auth exception : " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onAuthCanceled() {
+        LogUtils.i(LOG_TAG, "onCancel");
+        Toast.makeText(MainActivity.this,
+                R.string.account_auth_canceled, Toast.LENGTH_LONG).show();
     }
 }
