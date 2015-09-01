@@ -1,6 +1,7 @@
 package com.ddmeng.mengpo;
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.ddmeng.mengpo.fragments.MainContentListFragment;
 import com.ddmeng.mengpo.utils.Constants;
+import com.ddmeng.mengpo.utils.LogUtils;
 import com.ddmeng.mengpo.utils.PrefUtils;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -32,6 +34,7 @@ import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity implements MainContentListFragment.ContentListCallback {
+    private static final String LOG_TAG = "MainActivity";
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -160,15 +163,25 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
             initAuthListener();
         }
 
+        LogUtils.i(LOG_TAG, "--authorize--");
         mSsoHandler.authorize(mAuthListener);
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (null != mSsoHandler) {
+            LogUtils.i(LOG_TAG, "authorizeCallBack, data: " + data);
+            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
+        }
+    }
 
     private void initAuthListener() {
         mAuthListener = new WeiboAuthListener() {
             @Override
             public void onComplete(Bundle bundle) {
+                LogUtils.i(LOG_TAG, "onComplete");
                 // 从 Bundle 中解析 Token
                 mAccessToken = Oauth2AccessToken.parseAccessToken(bundle);
                 //从这里获取用户输入的 电话号码信息
@@ -195,12 +208,14 @@ public class MainActivity extends AppCompatActivity implements MainContentListFr
 
             @Override
             public void onWeiboException(WeiboException e) {
+                LogUtils.i(LOG_TAG, "onWeiboException: " + e);
                 Toast.makeText(MainActivity.this,
                         "Auth exception : " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onCancel() {
+                LogUtils.i(LOG_TAG, "onCancel");
                 Toast.makeText(MainActivity.this,
                         R.string.account_auth_canceled, Toast.LENGTH_LONG).show();
             }
