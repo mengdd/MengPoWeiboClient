@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.ddmeng.mengpo.utils.LogUtils;
-import com.ddmeng.mengpo.utils.PrefUtils;
+import com.ddmeng.mengpo.utils.TokenUtils;
 import com.ddmeng.mengpo.view.mvp.AuthView;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
@@ -15,12 +15,13 @@ public class AuthPresenter implements AuthInteractor.AuthorizeCallback {
     private AuthView mView;
     private AuthInteractor mInteractor;
 
-    private Oauth2AccessToken mAccessToken;
-
-
     public AuthPresenter(AuthView view) {
         this.mView = view;
         mInteractor = new AuthInteractor();
+    }
+
+    public void initAuthInfo() {
+        mView.initAuthInfoView();
     }
 
     public void authorize() {
@@ -37,11 +38,11 @@ public class AuthPresenter implements AuthInteractor.AuthorizeCallback {
     public void onComplete(Bundle bundle) {
         LogUtils.i(LOG_TAG, "onComplete");
         // 从 Bundle 中解析 Token
-        mAccessToken = Oauth2AccessToken.parseAccessToken(bundle);
-        if (mAccessToken.isSessionValid()) {
+        Oauth2AccessToken accessToken = Oauth2AccessToken.parseAccessToken(bundle);
+        if (accessToken.isSessionValid()) {
 
             // 保存 Token 到 SharedPreferences
-            PrefUtils.saveAccessToken(mView.getActivity(), mAccessToken);
+            TokenUtils.saveToken(mView.getActivity(), accessToken);
 
             mView.onAuthSuccess();
         } else {

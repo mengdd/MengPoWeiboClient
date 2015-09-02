@@ -22,27 +22,27 @@ import android.widget.Toast;
 
 import com.ddmeng.mengpo.auth.AuthPresenter;
 import com.ddmeng.mengpo.fragments.MainContentListFragment;
-import com.ddmeng.mengpo.utils.Constants;
+import com.ddmeng.mengpo.user.UserInfoPresenter;
 import com.ddmeng.mengpo.utils.LogUtils;
-import com.ddmeng.mengpo.utils.PrefUtils;
+import com.ddmeng.mengpo.utils.TokenUtils;
 import com.ddmeng.mengpo.view.mvp.AuthView;
-import com.sina.weibo.sdk.auth.AuthInfo;
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-import com.sina.weibo.sdk.auth.WeiboAuthListener;
-import com.sina.weibo.sdk.auth.sso.SsoHandler;
-import com.sina.weibo.sdk.exception.WeiboException;
+import com.ddmeng.mengpo.view.mvp.UserInfoView;
+import com.ddmeng.mengpo.viewholders.UserInfoViewHolder;
+import com.sina.weibo.sdk.openapi.models.User;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity
-        implements MainContentListFragment.ContentListCallback, AuthView {
+        implements MainContentListFragment.ContentListCallback, AuthView, UserInfoView,
+        UserInfoViewHolder.Callback {
     private static final String LOG_TAG = "MainActivity";
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
+    @InjectView(R.id.drawer_menu_layout)
+    View mDrawerMenuLayout;
     @InjectView(R.id.drawer_menu_list)
     ListView mDrawerList;
     @InjectView(R.id.content_container)
@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle mDrawerToggle;
 
     private AuthPresenter mAuthPresenter;
+    private UserInfoPresenter mUserInfoPresenter;
+    private UserInfoViewHolder mUserInfoViewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,11 @@ public class MainActivity extends AppCompatActivity
         showMainListFragment();
 
         mAuthPresenter = new AuthPresenter(this);
+        mUserInfoPresenter = new UserInfoPresenter(this);
+        mUserInfoViewHolder = new UserInfoViewHolder(mDrawerMenuLayout, this);
+
+
+        mAuthPresenter.initAuthInfo();
 
     }
 
@@ -158,8 +165,38 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @OnClick(R.id.login_button)
-    void doLogin(View view) {
+
+    @Override
+    public void initAuthInfoView() {
+        if (TokenUtils.isTokenValid(this)) {
+            LogUtils.i(LOG_TAG, "show user information");
+            mUserInfoPresenter.getUserInfo();
+        } else {
+            LogUtils.i(LOG_TAG, "show login button");
+            mUserInfoViewHolder.showLoginButton();
+        }
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void showUserInfo(User user) {
+        Toast.makeText(MainActivity.this,
+                "获取User信息成功，用户昵称：" + user.screen_name,
+                Toast.LENGTH_LONG).show();
+        mUserInfoViewHolder.populate(user);
+    }
+
+    @Override
+    public void showFailedInfo(String info) {
+        Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onLoginButtonClicked() {
         mAuthPresenter.authorize();
     }
 
@@ -178,6 +215,7 @@ public class MainActivity extends AppCompatActivity
     public void onAuthSuccess() {
         Toast.makeText(MainActivity.this,
                 R.string.account_auth_success, Toast.LENGTH_SHORT).show();
+        mUserInfoPresenter.getUserInfo();
     }
 
     @Override

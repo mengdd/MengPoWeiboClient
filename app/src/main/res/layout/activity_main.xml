@@ -22,5 +22,7 @@
     </RelativeLayout>
 
     <!-- The navigation drawer -->
-    <include layout="@layout/drawer_menu_layout" />
+    <include
+        android:id="@+id/drawer_menu_layout"
+        layout="@layout/drawer_menu_layout" />
 </android.support.v4.widget.DrawerLayout>
