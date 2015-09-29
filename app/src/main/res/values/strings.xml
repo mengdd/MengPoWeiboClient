@@ -16,7 +16,12 @@
     <!--Account & Auth-->
     <string name="login">Login</string>
     <string name="logout">Logout</string>
-    <string name="account_auth_success">授权成功</string>
-    <string name="account_auth_failed">授权失败</string>
-    <string name="account_auth_canceled">取消授权</string>
+    <string name="account_auth_success">Auth Success</string>
+    <string name="account_auth_failed">Auth Failed</string>
+    <string name="account_auth_canceled">Auth Canceled</string>
+
+    <!--User Info-->
+    <string name="statuses_count">%d\nstatuses</string>
+    <string name="friends_count">%d\nfriends</string>
+    <string name="followers_count">%d\nfollowers</string>
 </resources>

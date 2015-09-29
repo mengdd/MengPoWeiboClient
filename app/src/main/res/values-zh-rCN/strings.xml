@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">MengPo</string>
+
+
+    <!--Drawer Menu-->
+    <array name="drawer_menu_list">
+        <item>Menu Item 1</item>
+        <item>Menu Item 2</item>
+        <item>Menu Item 3</item>
+    </array>
+    <string name="drawer_menu_open">Drawer Open</string>
+    <string name="drawer_menu_closed">Drawer Closed</string>
+
+    <!--Account & Auth-->
+    <string name="login">登录</string>
+    <string name="logout">登出</string>
+    <string name="account_auth_success">授权成功</string>
+    <string name="account_auth_failed">授权失败</string>
+    <string name="account_auth_canceled">取消授权</string>
+
+    <!--User Info-->
+    <string name="statuses_count">%d\n微博</string>
+    <string name="friends_count">%d\n关注</string>
+    <string name="followers_count">%d\n粉丝</string>
+</resources>
