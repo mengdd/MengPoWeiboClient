@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,8 +46,6 @@ public class MainActivity extends AppCompatActivity
     View mDrawerMenuLayout;
     @InjectView(R.id.drawer_menu_list)
     ListView mDrawerList;
-    @InjectView(R.id.content_container)
-    FrameLayout mContentContainer;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
 
@@ -71,6 +70,16 @@ public class MainActivity extends AppCompatActivity
 
 
         mAuthPresenter.initAuthInfo();
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
     }
 

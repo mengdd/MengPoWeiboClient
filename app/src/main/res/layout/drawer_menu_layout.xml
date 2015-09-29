@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@color/primary"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -42,7 +42,7 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/primary"
+        android:background="@color/colorPrimary"
         android:choiceMode="singleChoice"
         android:divider="@color/divider"
         android:dividerHeight="0dp" />
